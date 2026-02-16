@@ -8,6 +8,7 @@ export interface Task {
     assignee: string;
     assigneeAvatar: string;
     progress: number; // 0-5
+    notes?: string;
 }
 
 export interface Resource {

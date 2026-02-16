@@ -4,6 +4,8 @@ import { Task, Resource, SystemConfig, TaskStatus } from '../types';
 interface AppContextType {
     tasks: Task[];
     moveTask: (taskId: string, newStatus: TaskStatus) => void;
+    addTask: (task: Task) => void;
+    updateTask: (taskId: string, updates: Partial<Task>) => void;
     resources: Resource[];
     config: SystemConfig;
     updateConfig: (key: keyof SystemConfig, value: any) => void;
@@ -12,12 +14,12 @@ interface AppContextType {
 }
 
 const initialTasks: Task[] = [
-    { id: 'A-242', title: 'Servo Calibration sequence mismatch', status: 'BACKLOG', priority: 'LOW', assignee: 'UNASSIGNED', assigneeAvatar: '', progress: 0 },
-    { id: 'B-105', title: 'Hydraulic fluid pressure sensor error', status: 'BACKLOG', priority: 'MED', assignee: 'UNASSIGNED', assigneeAvatar: '', progress: 0 },
-    { id: 'C-882', title: 'Chassis reinforcement plating (Titanium)', status: 'FABRICATION', priority: 'HIGH', assignee: 'FAB-04', assigneeAvatar: '', progress: 2 },
-    { id: 'A-201', title: 'Armature Assembly: Joint 3 & 4', status: 'ASSEMBLY', priority: 'MED', assignee: 'K. OLSEN', assigneeAvatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCRRe6ew2klHdm4gB641Cisjijjp-56Rve6b_FeDWkN2ggnd7uDkhcrei0a7ix98sSFiCOFvqBNHBW_kagYSX1qvgEeTTKNbT1t6DoMdVLmImY6F8zam_ctShdC5UUIuVIX7dFG7JsO1FxdLzY77Hz3WkaOBJwjPIPuBctsLGHUiUapGMtnamckNDwEklfib1ti-HxeMltpGXeQHD2AdaPh6Pophs-XFhwcLADLz1ao9yNBzosqeuM4xfs38WLZU5gclglVyTbJfv7E', progress: 4 },
-    { id: 'A-249', title: 'Logic Board Wiring Loom Install', status: 'ASSEMBLY', priority: 'CRIT', assignee: 'J.D.', assigneeAvatar: '', progress: 3 },
-    { id: 'F-002', title: 'Firmware Flash V4.0.1 (Beta)', status: 'DEPLOYMENT', priority: 'RDY', assignee: 'SYS', assigneeAvatar: '', progress: 5 },
+    { id: 'A-242', title: 'Servo Calibration sequence mismatch', status: 'BACKLOG', priority: 'LOW', assignee: 'UNASSIGNED', assigneeAvatar: '', progress: 0, notes: 'Standard calibration procedure failed at step 3. Suspect encoder drift.' },
+    { id: 'B-105', title: 'Hydraulic fluid pressure sensor error', status: 'BACKLOG', priority: 'MED', assignee: 'UNASSIGNED', assigneeAvatar: '', progress: 0, notes: 'Sensor reading fluctuates wildly. Check wiring harness.' },
+    { id: 'C-882', title: 'Chassis reinforcement plating (Titanium)', status: 'FABRICATION', priority: 'HIGH', assignee: 'FAB-04', assigneeAvatar: '', progress: 2, notes: 'Material arrived. Plasma cutter configured for 12mm Ti-6Al-4V.' },
+    { id: 'A-201', title: 'Armature Assembly: Joint 3 & 4', status: 'ASSEMBLY', priority: 'MED', assignee: 'K. OLSEN', assigneeAvatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCRRe6ew2klHdm4gB641Cisjijjp-56Rve6b_FeDWkN2ggnd7uDkhcrei0a7ix98sSFiCOFvqBNHBW_kagYSX1qvgEeTTKNbT1t6DoMdVLmImY6F8zam_ctShdC5UUIuVIX7dFG7JsO1FxdLzY77Hz3WkaOBJwjPIPuBctsLGHUiUapGMtnamckNDwEklfib1ti-HxeMltpGXeQHD2AdaPh6Pophs-XFhwcLADLz1ao9yNBzosqeuM4xfs38WLZU5gclglVyTbJfv7E', progress: 4, notes: 'Align primary servo motors with chassis mount points.\n> Verify torque settings before locking.\n> Ensure hydraulic lines are clear of rotation path.' },
+    { id: 'A-249', title: 'Logic Board Wiring Loom Install', status: 'ASSEMBLY', priority: 'CRIT', assignee: 'J.D.', assigneeAvatar: '', progress: 3, notes: 'Schematic ref: E-202-B. Ensure ground loops are minimized.' },
+    { id: 'F-002', title: 'Firmware Flash V4.0.1 (Beta)', status: 'DEPLOYMENT', priority: 'RDY', assignee: 'SYS', assigneeAvatar: '', progress: 5, notes: 'CRC check passed. Ready for deployment.' },
 ];
 
 const initialResources: Resource[] = [
@@ -50,11 +52,33 @@ export const AppProvider = ({ children }: PropsWithChildren<{}>) => {
     };
 
     const moveTask = (taskId: string, newStatus: TaskStatus) => {
-        setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: newStatus } : t));
+        setTasks(prev => {
+            const updated = prev.map(t => t.id === taskId ? { ...t, status: newStatus } : t);
+            // Sync with modal if open
+            if (activeModalTask && activeModalTask.id === taskId) {
+                setActiveModalTask(updated.find(t => t.id === taskId) || null);
+            }
+            return updated;
+        });
+    };
+
+    const addTask = (task: Task) => {
+        setTasks(prev => [...prev, task]);
+    };
+
+    const updateTask = (taskId: string, updates: Partial<Task>) => {
+        setTasks(prev => {
+            const updated = prev.map(t => t.id === taskId ? { ...t, ...updates } : t);
+            if (activeModalTask && activeModalTask.id === taskId) {
+                // We need to be careful not to cause loops if updateTask is called during render, but it shouldn't be.
+                setActiveModalTask(updated.find(t => t.id === taskId) || null);
+            }
+            return updated;
+        });
     };
 
     return (
-        <AppContext.Provider value={{ tasks, moveTask, resources, config, updateConfig, activeModalTask, setActiveModalTask }}>
+        <AppContext.Provider value={{ tasks, moveTask, addTask, updateTask, resources, config, updateConfig, activeModalTask, setActiveModalTask }}>
             {children}
         </AppContext.Provider>
     );
