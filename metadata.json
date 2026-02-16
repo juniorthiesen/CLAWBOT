@@ -1,0 +1,5 @@
+{
+  "name": "CLAWBOT Industrial Dashboard",
+  "description": "A high-fidelity, sci-fi industrial dashboard featuring a Kanban board, resource allocation matrix, and system calibration tools using React and Tailwind CSS.",
+  "requestFramePermissions": []
+}

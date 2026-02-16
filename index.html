@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CLAWBOT // SYSTEM ONLINE</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#FFFF00", 
+                        "primary-dim": "#b3b300", 
+                        "background-dark": "#111111",
+                        "surface": "#1A1A1A",
+                        "border-main": "#333333",
+                        "border-light": "#444444",
+                        "text-main": "#E0E0E0",
+                        "text-muted": "#555555",
+                        "success": "#00FF66",
+                        "error": "#FF3333",
+                        "critical": "#FF3333",
+                    },
+                    fontFamily: {
+                        "display": ["Chakra Petch", "sans-serif"],
+                        "mono": ["Space Mono", "monospace"],
+                        "body": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: {
+                        DEFAULT: "0px",
+                        "lg": "0px",
+                        "xl": "0px", 
+                        "full": "0px", 
+                    },
+                    boxShadow: {
+                        'hard': '4px 4px 0px #000000',
+                    },
+                    backgroundImage: {
+                        'grid-pattern': `linear-gradient(to right, #222 1px, transparent 1px),
+                                       linear-gradient(to bottom, #222 1px, transparent 1px)`,
+                        'hatch-pattern': `repeating-linear-gradient(
+                            45deg,
+                            #1A1A1A,
+                            #1A1A1A 10px,
+                            #151515 10px,
+                            #151515 20px
+                        )`
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            background-color: #111111;
+            background-size: 20px 20px;
+            background-image: linear-gradient(to right, #222 1px, transparent 1px), linear-gradient(to bottom, #222 1px, transparent 1px);
+            cursor: crosshair;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+            background: #111;
+        }
+        ::-webkit-scrollbar-track {
+            background: #111; 
+            border-left: 1px solid #333;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333; 
+            border: 1px solid #111;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555; 
+        }
+
+        /* Card Clip Path - Triangle Cutout Top-Left */
+        .card-cutout {
+            clip-path: polygon(
+                0% 20px,    /* Start below top-left corner */
+                20px 0%,    /* Angle up to top edge */
+                100% 0%,    /* Top right */
+                100% 100%,  /* Bottom right */
+                0% 100%     /* Bottom left */
+            );
+        }
+
+        /* Glitch Animation */
+        .hover-glitch:hover {
+            animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
+            color: #FFFF00;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0) }
+            20% { transform: translate(-2px, 2px) }
+            40% { transform: translate(-2px, -2px) }
+            60% { transform: translate(2px, 2px) }
+            80% { transform: translate(2px, -2px) }
+            100% { transform: translate(0) }
+        }
+
+        /* Range Slider Styling */
+        input[type=range] {
+            -webkit-appearance: none; 
+            background: transparent; 
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            background: #FFFF00;
+            cursor: pointer;
+            border: none;
+            margin-top: -6px;
+            box-shadow: 0 0 0 1px #000;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #333333;
+        }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react-router-dom": "https://esm.sh/react-router-dom@^7.13.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "react": "https://esm.sh/react@^19.2.4"
+  }
+}
+</script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>
